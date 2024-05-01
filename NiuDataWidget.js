@@ -63,6 +63,7 @@ const actionApi = 'https://app-api.niu.com/v5/cmd/creat';
 const headerUserAgent = 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic';
 // const headerUserAgent = 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Europe/Berlin;model=iPhone13,2;lang=de-DE;ostype=iOS;clientIdentifier=Domestic';
 const headerAcceptLanguage = 'zh-CN';
+const useScooterDetailCache = false;
 const niu_app_id = 'niu_03cn0n7v';
 
 
