@@ -50,20 +50,21 @@ var colors = {
 }
 
 // [SN] will be replaced with the scooter serial no
-const scooterDetailApi = 'https://app-api.niu.com/v5/scooter/detail/[SN]';
-// const scooterDetailApi = 'https://app-api-fk.niu.com/v5/scooter/detail/[SN]';
-const scooterInfolApi = 'https://app-api.niu.com/v3/motor_data/index_info?&sn=[SN]';
-// const scooterInfolApi = 'https://app-api-fk.niu.com/v3/motor_data/index_info?&sn=[SN]';
-const lastTrackDataApi = 'https://app-api.niu.com/v5/track/list/v2';
-// const lastTrackDataApi = 'https://app-api-fk.niu.com/v5/track/list/v2';
-const loadTokenApi = 'https://account.niu.com/v3/api/oauth2/token';
-// const loadTokenApi = 'https://account-fk.niu.com/v3/api/oauth2/token';
-const actionApi = 'https://app-api.niu.com/v5/cmd/creat';
-// const actionApi = 'https://app-api-fk.niu.com/v5/cmd/creat';
+// const scooterDetailApi = 'https://app-api.niu.com/v5/scooter/detail/[SN]';
+const scooterDetailApi = 'https://app-api-fk.niu.com/v5/scooter/detail/[SN]';
+// const scooterInfolApi = 'https://app-api.niu.com/v3/motor_data/index_info?&sn=[SN]';
+const scooterInfolApi = 'https://app-api-fk.niu.com/v3/motor_data/index_info?&sn=[SN]';
+// const lastTrackDataApi = 'https://app-api.niu.com/v5/track/list/v2';
+const lastTrackDataApi = 'https://app-api-fk.niu.com/v5/track/list/v2';
+// const loadTokenApi = 'https://account.niu.com/v3/api/oauth2/token';
+const loadTokenApi = 'https://account-fk.niu.com/v3/api/oauth2/token';
+// const actionApi = 'https://app-api.niu.com/v5/cmd/creat';
+const actionApi = 'https://app-api-fk.niu.com/v5/cmd/creat';
 
-const headerUserAgent = 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic';
-// const headerUserAgent = 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Europe/Berlin;model=iPhone13,2;lang=de-DE;ostype=iOS;clientIdentifier=Domestic';
-const headerAcceptLanguage = 'zh-CN';
+// const headerUserAgent = 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic';
+const headerUserAgent = 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Europe/Berlin;model=iPhone13,2;lang=de-DE;ostype=iOS;clientIdentifier=Domestic';
+// const headerAcceptLanguage = 'zh-CN';
+const headerAcceptLanguage = 'de-DE';
 const useScooterDetailCache = false;
 const niu_app_id = 'niu_03cn0n7v';
 
