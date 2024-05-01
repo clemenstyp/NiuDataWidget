@@ -14,6 +14,7 @@
 	var username = "";
 	var password = "";
 	var sn = ""
+	var countryCode = '86'
 	var debug_size = "medium"; // which size should the widget try to run as when run through Scriptable. (small, medium, large)
 	var is_dark_mode_working = true; // always use white theme when setting to false
 }
@@ -46,6 +47,24 @@ var colors = {
 		position: "222222" // hex without the #
 	}
 }
+
+// [SN] will be replaced with the scooter serial no
+const scooterDetailApi = 'https://app-api.niu.com/v5/scooter/detail/[SN]';
+// const scooterDetailApi = 'https://app-api-fk.niu.com/v5/scooter/detail/[SN]';
+const scooterInfolApi = 'https://app-api.niu.com/v3/motor_data/index_info?&sn=[SN]';
+// const scooterInfolApi = 'https://app-api-fk.niu.com/v3/motor_data/index_info?&sn=[SN]';
+const lastTrackDataApi = 'https://app-api.niu.com/v5/track/list/v2';
+// const lastTrackDataApi = 'https://app-api-fk.niu.com/v5/track/list/v2';
+const loadTokenApi = 'https://account.niu.com/v3/api/oauth2/token';
+// const loadTokenApi = 'https://account-fk.niu.com/v3/api/oauth2/token';
+const actionApi = 'https://app-api.niu.com/v5/cmd/creat';
+// const actionApi = 'https://app-api-fk.niu.com/v5/cmd/creat';
+
+const headerUserAgent = 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic';
+// const headerUserAgent = 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Europe/Berlin;model=iPhone13,2;lang=de-DE;ostype=iOS;clientIdentifier=Domestic';
+const headerAcceptLanguage = 'zh-CN';
+const niu_app_id = 'niu_03cn0n7v';
+
 
 function isDarkMode() 
 {
@@ -732,26 +751,38 @@ async function progressCircle(
 }
 
 async function fetchScooterDetail(token, sn) {
-	var req = new Request('https://app-api.niu.com/v5/scooter/detail/' + sn);
+	let fileManager = FileManager.iCloud();
+	let file = fileManager.joinPath(fileManager.documentsDirectory(), 'niu_data/niu_detail_' + sn + '.dat');
+	if (useScooterDetailCache){
+		if (fileManager.fileExists(file)){
+			fileManager.downloadFileFromiCloud(file);
+			return [true, JSON.parse(fileManager.readString(file))];
+		}
+	}
+	var req = new Request(scooterDetailApi.replace("[SN]", sn));
 	req.method = 'GET';
 	req.headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
-		'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'User-Agent': headerUserAgent,
+		'Accept-Language': headerAcceptLanguage,
 		'token': token
 	};
 	var json = await req.loadJSON();
-	if (json.status == 0)
+	if (json.status == 0){
+		fileManager.writeString(file, JSON.stringify(json));
 		return [true, json];
-	else
+	} else {
 		return [false, json];
+	}
 }
 
 async function fetchInfoData(token) {
-	var req = new Request('https://app-api.niu.com/v3/motor_data/index_info?&sn=' + sn);
+	var req = new Request(scooterInfolApi.replace("[SN]", sn));
 	req.method = 'GET';
 	req.headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
-		'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+		'User-Agent': headerUserAgent,
+		'Accept-Language': headerAcceptLanguage,
 		'token': token
 	};
 	var json= await req.loadJSON();
@@ -771,11 +802,12 @@ async function loadLastTrackData(token, sn, from_local = true) {
 	}
 	else
 	{
-		var req = await new Request('https://app-api.niu.com/v5/track/list/v2');
+		var req = await new Request(lastTrackDataApi.replace("[SN]", sn));
 		req.method = 'POST';
 		req.headers = {
 			'Content-Type': 'application/json',
-			'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+			'User-Agent': headerUserAgent,
+			'Accept-Language': headerAcceptLanguage,
 			'token': token
 		};
 		req.body = '{"sn":"' + sn + '","index":"0","token":"' + token + '","pagesize":1}';
@@ -794,13 +826,14 @@ async function loadToken(force = false) {
 	token_file = tokenManager.joinPath(tokenManager.documentsDirectory(), "niu_data/token_" + username + ".dat");
 
 	if (force || !tokenManager.fileExists(token_file)) {
-		var request_ = await new Request('https://account.niu.com/v3/api/oauth2/token');
+		var request_ = await new Request(loadTokenApi.replace("[SN]", sn));
 		request_.method = "POST";
 		request_.headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'User-Agent': 'manager/4.6.48 (iPhone; iOS 15.1.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic'
+			'User-Agent': headerUserAgent,
+			'Accept-Language': headerAcceptLanguage,
 		};
-		request_.body = 'account=' + username + '&password=' + password + '&app_id=niu_03cn0n7v&scope=base&countryCode=86&grant_type=password';
+		request_.body = 'account=' + username + '&password=' + password + '&app_id=' + niu_app_id + '&scope=base&countryCode=' + countryCode + '&grant_type=password';
 		var json = await request_.loadJSON();
 		if (json.status == 0) {
 			var token = json.data.token.access_token;
@@ -818,11 +851,12 @@ async function loadToken(force = false) {
 }
 
 async function action(type, token) {
-	var req = new Request('https://app-api.niu.com/v5/cmd/creat');
+	var req = new Request(actionApi.replace("[SN]", sn));
 	req.method = 'POST';
 	req.headers = {
 		'Content-Type': 'application/json',
-		'User-Agent': 'manager/4.6.20 (iPhone; iOS 14.5.1; Scale/3.00);timezone=Asia/Shanghai;model=iPhone13,2;lang=zh-CN;ostype=iOS;clientIdentifier=Domestic',
+		'User-Agent': headerUserAgent,
+		'Accept-Language': headerAcceptLanguage,
 		'token': token
 	};
 	req.body = '{"token":"' + token + '","sn":"' + sn + '", "type":"' + type + '"}';
