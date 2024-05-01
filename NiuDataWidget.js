@@ -217,16 +217,21 @@ function addLastTrackMapArea() { // add the last track map area for medium size.
 			else
 			{
 				var req = new Request(last_track_data.track_thumb);
-				mapImage = await req.loadImage()
-				imageManager.writeImage(imageFile, mapImage);
-				imageManager.writeString(configFile, last_track_data.trackId);
+				try {
+					mapImage = await req.loadImage();
+					imageManager.writeImage(imageFile, mapImage);
+				  	imageManager.writeString(configFile, last_track_data.trackId);
+				} catch (error) {
+					log(error);
+				  }
 			}
 
 			column_right.topAlignContent();
-
-			let mapImageObj = column_right.addImage(mapImage);
-			mapImageObj.cornerRadius = 22;
-			mapImageObj.rightAlignImage();
+			if (mapImage != null){
+				let mapImageObj = column_right.addImage(mapImage);
+				mapImageObj.cornerRadius = 22;
+				mapImageObj.rightAlignImage();
+			}
 		}
 	}
 }
@@ -272,8 +277,10 @@ function addMapArea() { // add the map area for medium size.
 			}
 			if (mapImage == null) {
 				mapImage = await getMapImage(roundedLong, roundedLat, mapZoomLevel, colors);
-				// write image to disk for future use
+			  if (mapImage != null){
+					// write image to disk for future use
 				map_image_manager.writeImage(map_image_file, mapImage);
+				}
 			}
 
 			column_right.topAlignContent();
@@ -284,11 +291,12 @@ function addMapArea() { // add the map area for medium size.
 				// use Apple Maps
 				column_right.url = `http://maps.apple.com/?ll=${info_data.latitude},${info_data.longitude}&q=Niu`;
 			}
-
-			let mapImageObj = column_right.addImage(mapImage);
-
-			mapImageObj.cornerRadius = 22;
-			mapImageObj.rightAlignImage();
+			if (mapImage != null){
+				let mapImageObj = column_right.addImage(mapImage);
+	
+				mapImageObj.cornerRadius = 22;
+				mapImageObj.rightAlignImage();
+			}
 		}
 	}
 }
@@ -654,6 +662,9 @@ function drawErrorWidget(w, reason) {
 	title.font = Font.semiboldSystemFont(30)
 	title.minimumScaleFactor = 0.5
 
+	if (!(typeof reason === 'string' || reason instanceof String)){
+        reason = reason.toString();
+    }
 	let reasonText = w.addText(reason)
 	reasonText.textColor = Color.white()
 	reasonText.minimumScaleFactor = 0.5
