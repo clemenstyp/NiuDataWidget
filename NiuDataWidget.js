@@ -923,9 +923,17 @@ function parseInfoData(json) {
 	info_data.lastTrack_ridingTime = json.data.lastTrack.ridingTime;
 	info_data.lastTrack_distance = json.data.lastTrack.distance;
 
-	const timeFormatter = new DateFormatter();
-	timeFormatter.dateFormat = "HH:mm"
-	info_data.last_contact = timeFormatter.string(new Date(json.data.time));
+	let lastUpdate = new Date(json.data.time)
+	let now = new Date()
+	timeDiff = Math.round((Math.abs(now - lastUpdate)) / (1000 * 60))
+	if (timeDiff < 60) {
+		// been less than an hour since last update
+		info_data.last_contact = timeDiff + "m ago"
+	} else if (timeDiff < 1440) {
+		info_data.last_contact = Math.floor(timeDiff / 60) + "h ago"
+	} else {
+		info_data.last_contact = Math.floor(timeDiff / 1440) + "d ago"
+	}
 }
 
 function parseScooterDetail(json) {
